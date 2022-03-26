@@ -1,3 +1,8 @@
+-- commands/new_project.lua
+--
+-- Under GPLv3 License
+-- Copyright (c) 2020 - Rafael Alcalde Azpiazu (NEKERAFA)
+
 local pl_path = require 'pl.path'
 local pl_dir = require 'pl.dir'
 local pl_app = require 'pl.app'

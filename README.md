@@ -29,6 +29,8 @@ If you want to know more information about a specific command, you can type `<co
 
 ## Building
 
+*work in progress...*
+
 ## Instalation
 
 *work in progress...*
