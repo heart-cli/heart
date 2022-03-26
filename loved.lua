@@ -66,11 +66,11 @@ local function loved_main(args)
     elseif args[1] == 'new' then
         local path_game = new_project.command(unpack(args, 2))
         logger.log('Project created in %s', path_game)
-    --[[    utils.logger('Running project')
+--[[    utils.logger('Running project')
         run_project(path_game)
     elseif arg[1] == 'play' then
         run_project(pl_path.normcase(pl_path.normpath(arg[2])))
-    ]]
+]]
     elseif args[1] == 'version' then
         utils.printversion()
     else
@@ -80,7 +80,7 @@ end
 
 for _, arg_v in ipairs(arg) do
     if arg_v == '--debug' then
-        loved_main({unpack(arg, 2)})
+        loved_main({ unpack(arg, 2) })
         os.exit(0)
     end
 end

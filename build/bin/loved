@@ -1,3 +1,0 @@
-#!/bin/sh
-
-LUAROCKS_SYSCONFDIR='/usr/local/etc/luarocks' exec '/usr/local/bin/lua' -e 'package.path="/home/nekerafa/repos/loved/build/share/lua/5.1/?.lua;/home/nekerafa/repos/loved/build/share/lua/5.1/?/init.lua;"..package.path;package.cpath="/home/nekerafa/repos/loved/build/lib/lua/5.1/?.so;"..package.cpath;local k,l,_=pcall(require,"luarocks.loader") _=k and l.add_context("loved","1.0-1")' '/home/nekerafa/repos/loved/build/lib/luarocks/rocks-5.1/loved/1.0-1/bin/loved' "$@"
