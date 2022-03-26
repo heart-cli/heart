@@ -1,0 +1,25 @@
+rock_manifest = {
+   bin = {
+      loved = "fb4cf1d5efa5aff30039c9e2d83548db"
+   },
+   doc = {
+      LICENSE = "1ebbd3e34237af26da5dc08a4e440464",
+      ["README.md"] = "4d616b6546f823e8061983b0fd353da5"
+   },
+   ["loved-1.0-1.rockspec"] = "e5b353aa5c756606ead306af92c57f2e",
+   lua = {
+      libraries = {
+         json = {
+            ["json.lua"] = "de4359b70c4bec50ecc71426085c72e7"
+         }
+      },
+      loved = {
+         commands = {
+            ["new_project.lua"] = "913dd40df9a8702a7f8b69c8922110d6"
+         },
+         ["connections.lua"] = "8529da0e54b3c959af4f686c8e965211",
+         ["logger.lua"] = "5adc11a6130002e0ec459dc2a6bfca14",
+         ["utils.lua"] = "f5c9a4d0e7d31386b84aa2617f0a1afb"
+      }
+   }
+}

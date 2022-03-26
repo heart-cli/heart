@@ -7,25 +7,25 @@
 _DEBUG = false
 _WIN32_ANSI_ESCAPE_SUPPORT = true
 
--- Checks the source directory and configure require paths if we are debugging
+-- Checks the source directory and configure require paths
+local base_path = string.match(arg[0], '^(.*[\\/])')
+
 for _, arg_v in ipairs(arg) do
     if arg_v == '--debug' then
-        local base_path = string.match(arg[0], '^(.*[\\/])')
-
-        if base_path then
-            package.path = string.format('%s?.lua;%s', base_path, package.path)
-        end
-
         local lua_version = _VERSION:match('%d+%.%d+')
 
-        package.path = string.format('%srocks/share/lua/%s/?.lua;%s', base_path or '', lua_version, package.path)
-        package.path = string.format('%srocks/share/lua/%s/?/init.lua;%s', base_path or '', lua_version, package.path)
-        package.cpath = string.format('%srocks/lib/lua/%s/?.so;%s', base_path or '', lua_version, package.cpath)
-        package.cpath = string.format('%srocks/lib/lua/%s/?.dylib;%s', base_path or '', lua_version, package.cpath)
-        package.cpath = string.format('%srocks/lib/lua/%s/?.dll;%s', base_path or '', lua_version, package.cpath)
+        package.path = string.format('%srocks/share/lua/%s/?.lua;%s',base_path or '', lua_version, package.path)
+        package.path = string.format('%srocks/share/lua/%s/?/init.lua;%s',base_path or '', lua_version, package.path)
+        package.cpath = string.format('%srocks/lib/lua/%s/?.so;%s',base_path or '', lua_version, package.cpath)
+        package.cpath = string.format('%srocks/lib/lua/%s/?.dylib;%s',base_path or '', lua_version, package.cpath)
+        package.cpath = string.format('%srocks/lib/lua/%s/?.dll;%s',base_path or '', lua_version, package.cpath)
 
         break
     end
+end
+
+if base_path then
+    package.path = string.format('%s?.lua;%s', base_path, package.path)
 end
 
 local logger = require 'loved.logger'
@@ -78,11 +78,8 @@ local function loved_main(args)
     end
 end
 
-for _, arg_v in ipairs(arg) do
-    if arg_v == '--debug' then
-        loved_main({unpack(arg, 2)})
-        os.exit(0)
-    end
+if _DEBUG then
+    loved_main({unpack(arg, 2)})
+else
+    loved_main(arg)
 end
-
-loved_main(arg)
