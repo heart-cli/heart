@@ -85,6 +85,18 @@ function logger.print_win32_text(str, params)
     end
 end
 
+function logger.resetline()
+    if string.lower(app.platform()) == 'windows' then
+        if _WIN32_ANSI_ESCAPE_SUPPORT then
+            io.write('\r\27[K')
+        else
+            io.write('\n')
+        end
+    else
+        io.write('\r\27[K')
+    end
+end
+
 function logger.echo(str, params)
     if params == nil then params = {} end
     if params.endline == nil then params.endline = true end

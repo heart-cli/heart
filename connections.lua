@@ -20,36 +20,63 @@ local ssl_params = {
     verify = 'none'
 }
 
+local function get_min_width(downloaded, length, title)
+    local msg = '||'
+
+    if length ~= nil then
+        msg = string.format('%s %i%%', msg, downloaded / length * 100)
+    end
+
+    msg = string.format('%s %s', msg, pl_pretty.number(downloaded, 'M', 2))
+
+    if length ~= nil then
+        msg = string.format('%s / %s ', msg, pl_pretty.number(length, 'M', 2))
+    end
+
+    msg = string.format('%s - Downloading %s', msg, title)
+
+    return string.len(msg) + 10
+end
+
 --- Print a progress information
 --  @param int downloaded Current downloaded size
 --  @param int length Size of file to download
 --  @param int title Name of download
 local function progress_info(downloaded, length, title)
+    local min_width = get_min_width(downloaded, length, title)
+    local width = math.max(utils.gettermwidth() - min_width, 20)
+
+    local progress_bar = ''
+    local progress_msg = ''
+
     if length ~= nil then
-        local pos = math.modf(downloaded / length * utils.gettermwidth())
+        local pos = math.modf(downloaded / length * width)
 
-        local progress = '|'
+        progress_bar = '|'
 
-        for i = 0, utils.gettermwidth() do
+        for i = 0, width do
             if i <= pos then
-                progress = progress .. '#'
+                progress_bar = progress_bar .. '#'
             else
-                progress = progress .. ' '
+                progress_bar = progress_bar .. ' '
             end
         end
-        progress = progress .. '|'
+        progress_bar = progress_bar .. '|'
 
-        logger.echo(string.format('%s %i%%', progress, downloaded / length * 100), {fg = 'Green', endline = false})
-        logger.echo(' - ', { endline = false })
+        progress_bar = string.format('%s %i%%', progress_bar, downloaded / length * 100)
+        progress_msg = ' - '
     end
 
-    logger.echo(string.format('%s ', pl_pretty.number(downloaded, 'M', 2)), { endline = false })
+    progress_msg = string.format('%s%s ', progress_msg, pl_pretty.number(downloaded, 'M', 2))
 
     if length ~= nil then
-        logger.echo(string.format('/ %s ', pl_pretty.number(length, 'M', 2)), { endline = false })
+        progress_msg = string.format('%s/ %s ', progress_msg, pl_pretty.number(length, 'M', 2))
     end
 
-    logger.echo(string.format('- Downloading %s\r', title), { endline = false })
+    progress_msg = string.format('%s- Downloading %s', progress_msg, title)
+
+    logger.echo(string.format('\r%s', progress_bar), { fg = "Green", endline = false })
+    logger.echo(string.format('%s\r', progress_msg), { endline = false })
 end
 
 local function parse_response(response)
@@ -131,8 +158,8 @@ local function async_receive(conn, headers)
         -- If exists 'Content-Length' header, checks the reminded size
         if content_length then content_reminder = content_length - total end
 
-        -- Downloading 1 KB by default
-        local bytes, msg, partial_bytes = conn:receive(math.min(1024, content_reminder))
+        -- Downloading 8 KB by default
+        local bytes, msg, partial_bytes = conn:receive(math.min(8192, content_reminder))
 
         if bytes ~= nil then
             buffer = buffer .. bytes
@@ -183,8 +210,10 @@ local function receive_file(conn, headers, title)
 
         if status == nil then
             progress_info(result, tonumber(headers['Content-Length']), title or headers['Host'] or 'file')
+            --logger.resetline()
         else
-            print()
+            logger.echo('')
+
             if status == 'closed' then
                 content = result
                 break
@@ -237,9 +266,9 @@ function connections.get(url_addr, title)
         end
 
         if not moved then
-            logger.logger('Connecting to ' .. (parsed_url.host or 'nil'))
+            logger.log('Connecting to ' .. (parsed_url.host or 'nil'))
         else
-            logger.logger('Moved to ' .. (parsed_url.host or 'nil'))
+            logger.log('Moved to ' .. (parsed_url.host or 'nil'))
         end
 
         local conn = socket.tcp()
@@ -308,7 +337,7 @@ end
 
 --- Dispatch a intent and return the result
 --  @param function intent
-function utils.dispatch(intent)
+function connections.await(intent)
     return function (callbacks)
         local result = {intent()}
 
@@ -320,12 +349,12 @@ function utils.dispatch(intent)
     end
 end
 
-function utils.dispatchall(intents)
+function connections.awaitall(intents)
     local return_values = {}
 
     return function (callbacks)
         for name, intent in pairs(intents) do
-            return_values[name] = utils.dispatch(intent) {
+            return_values[name] = connections.await(intent) {
                 ok = function(...)
                     if callbacks.ok then return callbacks.ok(name, ...) end
                 end,
