@@ -1,6 +1,6 @@
 require 'conf-dev'
 
-_LOVED_VERSION = '1.0-alpha'
+_HEART_VERSION = '1.0-alpha'
 
 local new_project = require 'commands.new_project'
 

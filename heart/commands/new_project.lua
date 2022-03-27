@@ -12,24 +12,25 @@ local https = require 'ssl.https'
 
 local json = require 'libraries.json.json'
 
-local logger = require 'loved.logger'
-local utils = require 'loved.utils'
-local http = require 'loved.connections'
+local logger = require 'heart.logger'
+local utils = require 'heart.utils'
+local http = require 'heart.connections'
 
 local new_project = {
     name = 'new',
-    summary = 'Creates new Love2D project'
+    summary = 'Creates new LOVE project'
 }
 
 local function print_usage()
-    logger.echo([[Usage: loved new [options] <project_name>
-    Creates a new Love2D project, downloading the lasted version of Love2D and Git and installing locally
+    logger.echo([[Usage: heart new [options] <project_name>
+
+    Creates a new LOVE project, downloading the lasted version of LOVE and Git and installing locally
 
   Options:
-    --love <path>        Sets Love2D installation path. If no path added, uses a system call to invocate Love2D
-    --version <version>  Sets the Love2D version to download
+    --love <path>        Sets LOVE installation path. If no path added, uses a system call to invocate Love2D
+    --version <version>  Sets the LOVE version to download
 
-Typing "loved help" print information about all commands]])
+Typing "heart help" print information about all commands]])
 
     os.exit(0)
 end
@@ -48,7 +49,7 @@ local function mkdir(...)
 end
 
 local function get_love_releases()
-    logger.debug('Getting Loved2D info...')
+    logger.debug('Getting LOVE info...')
 
     local body, status_code = https.request('https://api.github.com/repos/love2d/love/releases')
 
@@ -91,10 +92,10 @@ local function get_love_releases()
             end
         end
 
-        logger.debug('Retrieved %i releases', #releases)
+        logger.debug('retrieved %i releases', #releases)
         return releases
     else
-        logger.error('fetching Love2D info: %s', { exit = -1 }, status_code)
+        logger.error('fetching LOVE info: %s', { exit = -1 }, status_code)
     end
 end
 
@@ -117,7 +118,7 @@ local function download_love(path_temp, releases, love_version)
         release = releases[1]
     end
 
-    return http.await(http.get(release.url, 'Love2D ' .. release.version)) {
+    return http.await(http.get(release.url, 'LOVE ' .. release.version)) {
         ok = function(content)
             local file = io.open(pl_path.join(path_temp, release.name), 'wb+')
             file:write(content)
@@ -187,7 +188,7 @@ local function check_love()
 end
 
 local function loved_mkconf(love, love_version, git, path_loved)
-    local configuration = { version = _LOVED_VERSION }
+    local configuration = { version = _HEART_VERSION }
 
     if type(love) == 'boolean' then
         local _, version = check_love()
@@ -231,14 +232,14 @@ end
 end
 
 function print_usage()
-    logger.echo([[Usage: loved new [options] <project_name>
-  Creates a new Love2D project, downloading the lasted version of Love2D and Git and installing locally.
+    logger.echo([[Usage: heart new [options] <project_name>
+    Creates a new LOVE project, downloading the lasted version of LOVE installing locally.
 
   Options:
-    --love <path>       Sets Love2D installation path. If no path added, uses a system call to invocate Love2D.
-    --version <number>  Defines the Love2D version to use.
+    --love <path>       Sets LOVE installation path. If no path added, uses a system call to invocate LOVE.
+    --version <number>  Defines the LOVE version to use.
 
-Typing "loved help" print information about all commands]])
+Typing "heart help" print information about all commands]])
 
     os.exit(0)
 end
@@ -271,13 +272,13 @@ function new_project.command(...)
 
     mkdir(path_game)
 
-    local path_loved = pl_path.join(path_game, '.loved')
+    local path_loved = pl_path.join(path_game, '.heart')
     mkdir(path_loved)
 
     local love_version = false
     if not args['love'] then
         logger.debug()
-        logger.log('Checking Love2D...')
+        logger.log('Checking LOVE...')
 
         local love, version = check_love()
 
@@ -302,7 +303,7 @@ function new_project.command(...)
             local path_temp = pl_path.join(path_loved, 'tmp')
             mkdir(path_temp)
             logger.debug()
-            logger.log('No Love2D installation detected, installing Love2D %s', args['version'] or releases[1].version)
+            logger.log('No LOVE %s installation detected, installing it', args['version'] or releases[1].version)
             local ok, data = download_love(path_temp, releases, args['version'])
 
             if not ok then
@@ -313,9 +314,9 @@ function new_project.command(...)
             pl_dir.rmtree(path_temp)
 
             if string.lower(pl_app.platform()) == 'windows' then
-                args['love'] = pl_path.join('.loved', 'love', 'love.exe')
+                args['love'] = pl_path.join('.heart', 'love', 'love.exe')
             else
-                args['love'] = pl_path.join('.loved', 'love', data.file)
+                args['love'] = pl_path.join('.heart', 'love', data.file)
             end
 
             love_version = data.version

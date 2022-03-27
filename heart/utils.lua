@@ -5,7 +5,7 @@
 
 local pl_app = require 'pl.app'
 
-local logger = require 'loved.logger'
+local logger = require 'heart.logger'
 
 local utils = {
     WIN64 = 'AMD64', WIN32 = 'x86'

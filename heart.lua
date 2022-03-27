@@ -1,10 +1,10 @@
--- loved.lua
--- A CLI tool to create and publish LÖVE games
+-- heart.lua
+-- a command-line toolkit for creating LÖVE games
 --
 -- Under GPLv3 License
 -- Copyright (c) 2020 - Rafael Alcalde Azpiazu (NEKERAFA)
 
-_LOVED_VERSION = '1.0-dev9'
+_HEART_VERSION = '1.0-dev10'
 _DEBUG = false
 _WIN32_ANSI_ESCAPE_SUPPORT = true
 
@@ -29,10 +29,10 @@ for _, arg_v in ipairs(arg) do
     end
 end
 
-local logger = require 'loved.logger'
-local utils = require 'loved.utils'
-local new_project = require 'loved.commands.new_project'
-local show_version = require 'loved.commands.show_version'
+local logger = require 'heart.logger'
+local utils = require 'heart.utils'
+local new_project = require 'heart.commands.new_project'
+local show_version = require 'heart.commands.show_version'
 
 local commands = {
     new_project, show_version
@@ -53,13 +53,14 @@ local function print_usage()
         commands_str = string.format('%s    %s%s%s\n', commands_str, command.name, string.rep(' ', max_width + 2 - widths[command.name]), command.summary)
     end
 
-    logger.printf("Love2D Distributor v%s", _LOVED_VERSION)
-    logger.echo()
-    logger.printf([[Usage: loved [command] [command-options] [arguments]
+    logger.printf("HEART v%s", _HEART_VERSION)
+    logger.printf([[Usage: heart [command] [command-options] [arguments]
+
+    A command-line toolkit for creating, running and packing LOVE games
 
   Commands:
 %s
-Typing "loved [command] help" print information about a command]], commands_str)
+Typing "heart [command] help" print information about a command]], commands_str)
 end
 
 table.insert(commands, {
@@ -75,7 +76,7 @@ local function print_error_args(args)
     os.exit(-1)
 end
 
-local function loved_main(args)
+local function heart_main(args)
     local n_arg = #args
 
     if n_arg == 0 then
@@ -97,9 +98,9 @@ end
 
 for _, arg_v in ipairs(arg) do
     if arg_v == '--debug' then
-        loved_main({ unpack(arg, 2) })
+        heart_main({ unpack(arg, 2) })
         os.exit(0)
     end
 end
 
-loved_main(arg)
+heart_main(arg)

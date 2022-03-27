@@ -3,13 +3,13 @@
 -- Under GPLv3 License
 -- Copyright (c) 2020 - Rafael Alcalde Azpiazu (NEKERAFA)
 
-local logger = require 'loved.logger'
+local logger = require 'heart.logger'
 
 local show_version = {
     name = 'version',
-    summary = 'Prints the Loved package version',
+    summary = 'Prints the HEART package version',
     command = function ()
-        logger.log(_LOVED_VERSION)
+        logger.log(_HEART_VERSION)
     end
 }
 

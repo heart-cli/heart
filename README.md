@@ -1,16 +1,18 @@
-# Loved
+# HËART
 
-A command-line interface (CLI) toolchain for creating, building and running LÖVE games.
+An *awersome* command-line (CLI) toolkit, written in pure Lua; for creating, packing and running LÖVE games.
+
+[![Powered by Lua](https://img.shields.io/badge/powered%20by-Lua-blue)](https://www.lua.org/) [![GPL-3.0](https://img.shields.io/github/license/heart-cli/heart)](https://github.com/heart-cli/heart/blob/main/LICENSE)
 
 ## Commands
 
-- **new** &lt;name of proyect&gt;
+- **new** &lt;name of project&gt;
 
-Creates a new Love2D proyect. *Loved* will download the lastest version of Love2D and install it locally, as the SCM (prefered Git), initializing the repository folder and setting it in order to upload content.
+Creates a new LÖVE project. *HËART* will download the lastest version of LÖVE and install it locally.
 
 - **version**
 
-Prints the current version of *Loved*.
+Prints the current version of *HËART*.
 
 - **help**
   
@@ -18,7 +20,7 @@ Prints the usage message onto the console.
 
 *work in progress...*
 
-If you want to know more information about a specific command, you can type `<command> help` and Loved will print the usage about its.
+If you want to know more information about a specific command, you can type `<command> help` and *HËART* will print the usage about its.
 
 ## Dependencies
 

@@ -9,8 +9,8 @@ local socket = require 'socket'
 local socket_url = require 'socket.url'
 local ssl = require 'ssl'
 
-local logger = require 'loved.logger'
-local utils = require 'loved.utils'
+local logger = require 'heart.logger'
+local utils = require 'heart.utils'
 
 -- Configuration of SSL Socket
 local ssl_params = {
@@ -234,7 +234,7 @@ local function send_headers(conn, host, path, query)
 
     local petition = string.format('GET %s HTTP/1.0', petition_url)
     local host_header = string.format('Host: %s', host)
-    local user_agent_header = string.format('User-Agent: Mozilla/5.0 (%s %s) Loved/%s Lua/%s', pl_app.platform(), utils.getarchitecture(), _LOVED_VERSION, utils.getluaversion())
+    local user_agent_header = string.format('User-Agent: Mozilla/5.0 (%s %s) Loved/%s Lua/%s', pl_app.platform(), utils.getarchitecture(), _HEART_VERSION, utils.getluaversion())
 
     logger.debug(petition)
     conn:send(petition .. '\r\n')
