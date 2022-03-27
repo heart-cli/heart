@@ -16,18 +16,19 @@ local logger = require 'loved.logger'
 local utils = require 'loved.utils'
 local http = require 'loved.connections'
 
-local new_project = {}
+local new_project = {
+    name = 'new',
+    summary = 'Creates new Love2D project'
+}
 
-local function print_new_project_usage()
-    utils.printversion()
-    logger.echo()
+local function print_usage()
     logger.echo([[Usage: loved new [options] <project_name>
     Creates a new Love2D project, downloading the lasted version of Love2D and Git and installing locally
-  
+
   Options:
     --love <path>        Sets Love2D installation path. If no path added, uses a system call to invocate Love2D
     --version <version>  Sets the Love2D version to download
-  
+
 Typing "loved help" print information about all commands]])
 
     os.exit(0)
@@ -93,7 +94,7 @@ local function get_love_releases()
         logger.debug('Retrieved %i releases', #releases)
         return releases
     else
-        logger.error('fetching love2d info: %s', { exit = -1 }, status_code)
+        logger.error('fetching Love2D info: %s', { exit = -1 }, status_code)
     end
 end
 
@@ -229,18 +230,29 @@ end
     main:close()
 end
 
-function print_new_project_usage()
-    utils.print_version()
-    logger.echo()
+function print_usage()
     logger.echo([[Usage: loved new [options] <project_name>
-  Creates a new Love2D project, downloading the lasted version of Love2D and Git and installing locally
+  Creates a new Love2D project, downloading the lasted version of Love2D and Git and installing locally.
 
   Options:
-    --love <path>  Sets Love2D installation path. If no path added, uses a system call to invocate Love2D
+    --love <path>       Sets Love2D installation path. If no path added, uses a system call to invocate Love2D.
+    --version <number>  Defines the Love2D version to use.
 
 Typing "loved help" print information about all commands]])
 
     os.exit(0)
+end
+
+local params = { ['love'] = '?', ['version'] = '?' }
+
+local function check_args(args)
+    for param in pairs(args) do
+        if type(param) == 'string' and not utils.includes(params, function (p) return p == param end) then
+            logger.error('%q not recognized', param)
+            print_usage()
+            os.exit(-1)
+        end
+    end
 end
 
 function new_project.command(...)
@@ -249,9 +261,10 @@ function new_project.command(...)
     local path_game = 'love2d-game'
 
     if n_args == 1 and args[1] == 'help' then
-        print_new_project_usage()
+        print_usage()
     elseif n_args >= 1 then
-        args = utils.getargs(args, { ['love'] = '?', ['version'] = '?' })
+        args = utils.getargs(args, params)
+        check_args(args)
         path_game = args[1] or path_game
         path_game = string.gsub(pl_path.normpath(path_game), '/', '\\')
     end
@@ -270,11 +283,20 @@ function new_project.command(...)
 
         if love then
             logger.log('Detected %s', version)
-            args['love'] = true
-        else
+
+            local love_version = string.match(version, '%d+%.%d+')
+
+            if args['version'] and args['version'] == love_version then
+                args['love'] = true
+            elseif args['version'] then
+                love = false
+            end
+        end
+
+        if not love then
             local releases = get_love_releases()
             if #releases == 0 then
-                logger.error("sorry, %s %s platform is not supported yet", { exit = -1 }, pl_app.platform(), utils.getarchitecture())
+                logger.error('sorry, %s %s platform is not supported yet', { exit = -1 }, pl_app.platform(), utils.getarchitecture())
             end
 
             local path_temp = pl_path.join(path_loved, 'tmp')
@@ -308,7 +330,8 @@ function new_project.command(...)
     love_mkconf(path_game)
     love_make_main_script(path_game)
 
-    return path_game
+    logger.log()
+    logger.printf('Project created in %s', path_game)
 end
 
 return new_project

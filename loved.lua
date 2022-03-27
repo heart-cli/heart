@@ -4,10 +4,11 @@
 -- Under GPLv3 License
 -- Copyright (c) 2020 - Rafael Alcalde Azpiazu (NEKERAFA)
 
+_LOVED_VERSION = '1.0-dev9'
 _DEBUG = false
 _WIN32_ANSI_ESCAPE_SUPPORT = true
 
--- Checks the source directory and configure require paths if we are debugging
+-- Checks if we call the script as debugging mode and configure require paths
 for _, arg_v in ipairs(arg) do
     if arg_v == '--debug' then
         local base_path = string.match(arg[0], '^(.*[\\/])')
@@ -31,25 +32,41 @@ end
 local logger = require 'loved.logger'
 local utils = require 'loved.utils'
 local new_project = require 'loved.commands.new_project'
+local show_version = require 'loved.commands.show_version'
 
-_LOVED_VERSION = '1.0-alpha'
+local commands = {
+    new_project, show_version
+}
 
 local function print_usage()
-    utils.printversion()
+    local max_width = 0
+    local widths = {}
+    for _, command in ipairs(commands) do
+        widths[command.name] = string.len(command.name)
+        if max_width < widths[command.name] then
+            max_width = widths[command.name]
+        end
+    end
+
+    local commands_str = ''
+    for _, command in ipairs(commands) do
+        commands_str = string.format('%s    %s%s%s\n', commands_str, command.name, string.rep(' ', max_width + 2 - widths[command.name]), command.summary)
+    end
+
+    logger.printf("Love2D Distributor v%s", _LOVED_VERSION)
     logger.echo()
-    logger.echo([[Usage: loved [command] [command-options] [arguments]
+    logger.printf([[Usage: loved [command] [command-options] [arguments]
 
   Commands:
-    new      Creates new Love2D proyect
-    play     Run a Love2D project
-    update   Updates Love2D project version
-    version  Print the version of Loved
-    help     Print this message
-
-Typing "loved [command] help" print information about a command]])
-
-    os.exit(0)
+%s
+Typing "loved [command] help" print information about a command]], commands_str)
 end
+
+table.insert(commands, {
+    name = 'help',
+    summary = 'Prints this message',
+    command = print_usage
+})
 
 --- Prints all given arguments as error
 local function print_error_args(args)
@@ -61,20 +78,20 @@ end
 local function loved_main(args)
     local n_arg = #args
 
-    if n_arg == 0 or args[1] == 'help' then
+    if n_arg == 0 then
         print_usage()
-    elseif args[1] == 'new' then
-        local path_game = new_project.command(unpack(args, 2))
-        logger.log('Project created in %s', path_game)
---[[    utils.logger('Running project')
-        run_project(path_game)
-    elseif arg[1] == 'play' then
-        run_project(pl_path.normcase(pl_path.normpath(arg[2])))
-]]
-    elseif args[1] == 'version' then
-        utils.printversion()
-    else
-        print_error_args(args)
+    elseif args[1] then
+        local executed = false
+        for _, command in ipairs(commands) do
+            if command.name == args[1] then
+                command.command(unpack(args, 2))
+                executed = true
+            end
+        end
+
+        if not executed then
+            print_error_args(args)
+        end
     end
 end
 

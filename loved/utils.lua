@@ -11,10 +11,6 @@ local utils = {
     WIN64 = 'AMD64', WIN32 = 'x86'
 }
 
-function utils.printversion()
-    logger.printf("Love2D Distributor v%s", _LOVED_VERSION)
-end
-
 -- Gets the architecture of the machine
 function utils.getarchitecture()
     local arch = ''
@@ -62,7 +58,7 @@ function utils.argserror(args)
         end
     end
 
-    logger.error('%q not recognized\n', s_args)
+    logger.error('%q not recognized', s_args)
 end
 
 -- Parse the arguments
@@ -121,6 +117,18 @@ function utils.getargs(args, options)
     end
 
     return parsed_args
+end
+
+function utils.includes(t, comp)
+    for k, v in pairs(t) do
+        if type(comp) == 'function' and comp(k, v) then
+            return true
+        elseif v == comp then
+            return true
+        end
+    end
+
+    return false
 end
 
 return utils

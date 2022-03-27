@@ -120,9 +120,9 @@ function logger.printf(msg, ...)
         n_args = n_args - 1
     end
 
-    if n_args > 0 then msg = string.format(msg, unpack(args)) end
+    if msg and n_args > 0 then msg = string.format(msg, unpack(args)) end
 
-    logger.echo(msg, params)
+    logger.echo(msg or '', params)
 end
 
 function logger.datemark()
