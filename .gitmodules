@@ -1,3 +1,6 @@
 [submodule "libraries/json"]
 	path = libraries/json
 	url = https://github.com/rxi/json.lua.git
+[submodule "love2d-template"]
+	path = love2d-template
+	url = https://github.com/heart-cli/love2d-template.git
